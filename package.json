@@ -1,12 +1,7 @@
 {
-  "name": "pribehari-preorder",
+  "name": "pribehari-dary",
   "version": "1.0.0",
-  "scripts": {
-    "build": "",
-    "start": ""
-  },
   "dependencies": {
-    "googleapis": "^128.0.0",
-    "qrcode": "^1.5.0"
+    "googleapis": "^128.0.0"
   }
 }
