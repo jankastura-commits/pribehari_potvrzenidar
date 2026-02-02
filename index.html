@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Předobjednávka knihy Příběháři</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Předobjednávka knihy Příběháři</h1>
+
+    <div id="form-intro"></div>
+
+    <form id="preorder-form">
+      <div class="form-group">
+        <label for="name">Jméno a příjmení *</label>
+        <input type="text" id="name" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail *</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="form-group">
+        <label for="bookCount">Počet knih *</label>
+        <input
+          type="number"
+          id="bookCount"
+          name="bookCount"
+          min="1"
+          step="1"
+          value="1"
+          required
+        />
+      </div>
+
+      <!-- <div class="form-group">
+        <label for="extraAmount">
+          Dobrovolný příspěvek navíc (Kč)
+        </label>
+        <input
+          type="number"
+          id="extraAmount"
+          name="extraAmount"
+          min="0"
+          step="10"
+          value="0"
+        />
+        <small id="amount-help"></small>
+      </div>--> 
+
+      <div class="form-group">
+        <label for="zasilkovna">
+          <b></b>Knihy budou připraveny k odeslání začátkem dubna.</b> <br /><br />
+          Knihu/y Vám pošleme Zásilkovnou. Prosím zvolte některou pobočku nebo box
+          <a
+            href="https://www.zasilkovna.cz/pobocky"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            z tohoto seznamu
+          </a>,
+          klikněte na tlačítko „Sdílet“ a vložte nám sem zobrazený odkaz:
+        </label>
+        <input
+          type="text"
+          id="zasilkovna"
+          name="zasilkovna"
+          placeholder="Sem vložte odkaz ze Zásilkovny"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="message">Chcete cokoliv dodat?</label>
+        <textarea
+          id="message"
+          name="message"
+          rows="3"
+          placeholder="Váš vzkaz (nepovinné)"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="consent" required />
+          Souhlasím se <a href="https://db374a6b-79f3-477b-aab2-48112f4fb9b1.usrfiles.com/ugd/db374a_d06865f1c39b4f5da9d8ff0249dc2370.pdf" target="_blank" rel="noopener noreferrer">zpracováním osobních údajů</a> za účelem vyřízení předobjednávky.
+        </label>
+      </div>
+
+      <div class="summary">
+        <p>
+          <strong>Aktuální vypočtená částka:</strong>
+          <span id="calculated-amount">–</span> Kč
+        </p>
+      </div>
+
+      <button type="submit" id="submit-btn">Vygenerovat QR platbu</button>
+
+      <div id="form-error" class="error" style="display:none;"></div>
+    </form>
+
+    <p class="support-note">
+  Chceš projekt Příběháři podpořit i nad rámec koupě knihy?
+  <a
+    href="https://pribehari.cz/#prispej-na-projekt"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Přispět na projekt →
+  </a>
+</p>
+
+    <section id="result" style="display:none;">
+      <h2>Děkujeme za předobjednávku 💛</h2>
+      <p>
+        Níže máš QR kód pro platbu a rekapitulaci údajů.
+        Platbu prosím odešli z bankovní aplikace.
+      </p>
+
+      <div id="qr-container"></div>
+
+      <div class="payment-details">
+        <p><strong>Částka:</strong> <span id="result-amount"></span> Kč</p>
+        <p><strong>Variabilní symbol:</strong> <span id="result-vs"></span></p>
+        <p><strong>Číslo účtu:</strong> <span id="result-account"></span></p>
+        <p><strong>Zpráva pro příjemce:</strong> <span id="result-message"></span></p>
+      </div>
+
+      <p id="after-text">
+        Po úhradě ti dáme vědět další podrobnosti k doručení knihy.
+      </p>
+    </section>
+  </main>
+
+  <script src="./config.js"></script>
+  <script src="./main.js"></script>
+</body>
+</html>
