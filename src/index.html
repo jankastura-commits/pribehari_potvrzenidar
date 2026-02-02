@@ -1,105 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Potvrzení o daru – Příběháři</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <main class="container">
-    <h1>Potvrzení o daru – Příběháři</h1>
+    <header class="hero">
+      <h1>Potvrzení o daru – Příběháři</h1>
+      <p class="lead" id="form-intro">
+        Pokud jste poslali dar na transparentní účet, vyplňte prosím tento formulář. Pomůže nám to vystavit <strong>potvrzení o daru</strong>.
+      </p>
+    </header>
 
-    <div id="form-intro"></div>
-
-    <form id="donation-form">
-      <div class="form-group">
-        <label>Dar jsem poslal/a jako *</label>
-        <label><input type="radio" name="donorType" value="FO" checked /> Fyzická osoba</label>
-        <label style="margin-left:12px;"><input type="radio" name="donorType" value="PO" /> Firma / organizace</label>
-      </div>
-
-      <!-- FO -->
-      <div id="fo-fields">
+    <div class="form-card">
+      <form id="donation-form" novalidate>
+        <!-- Donor type -->
         <div class="form-group">
-          <label for="firstName">Jméno *</label>
-          <input type="text" id="firstName" required />
+          <label>Dar jsem poslal/a jako <span class="req">*</span></label>
+
+          <div class="radio-row">
+            <label class="radio-pill">
+              <input type="radio" name="donorType" value="FO" checked />
+              Fyzická osoba
+            </label>
+
+            <label class="radio-pill">
+              <input type="radio" name="donorType" value="PO" />
+              Firma / organizace
+            </label>
+          </div>
         </div>
+
+        <!-- FO fields -->
+        <div id="fo-fields">
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="firstName">Jméno <span class="req">*</span></label>
+              <input type="text" id="firstName" autocomplete="given-name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Příjmení <span class="req">*</span></label>
+              <input type="text" id="lastName" autocomplete="family-name" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- PO fields -->
+        <div id="po-fields" style="display:none;">
+          <div class="form-group">
+            <label for="companyName">Název společnosti <span class="req">*</span></label>
+            <input type="text" id="companyName" autocomplete="organization" />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="ico">IČO <span class="req">*</span></label>
+              <input type="text" id="ico" inputmode="numeric" />
+            </div>
+
+            <div class="form-group">
+              <label for="contactPerson">Kontaktní osoba <span class="req">*</span></label>
+              <input type="text" id="contactPerson" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="email">E-mail <span class="req">*</span></label>
+            <input type="email" id="email" autocomplete="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Telefon <span class="muted">(nepovinné)</span></label>
+            <input type="tel" id="phone" autocomplete="tel" />
+          </div>
+        </div>
+
+        <!-- Address -->
         <div class="form-group">
-          <label for="lastName">Příjmení *</label>
-          <input type="text" id="lastName" required />
+          <label for="street">Ulice a číslo <span class="req">*</span></label>
+          <input type="text" id="street" autocomplete="street-address" required />
         </div>
-      </div>
 
-      <!-- PO -->
-      <div id="po-fields" style="display:none;">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="city">Město <span class="req">*</span></label>
+            <input type="text" id="city" autocomplete="address-level2" required />
+          </div>
+
+          <div class="form-group">
+            <label for="zip">PSČ <span class="req">*</span></label>
+            <input type="text" id="zip" autocomplete="postal-code" required />
+          </div>
+        </div>
+
+        <!-- Donation -->
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="amount">Částka daru (Kč) <span class="req">*</span></label>
+            <input type="number" id="amount" min="1" step="1" inputmode="numeric" required />
+          </div>
+
+          <div class="form-group">
+            <label for="sentDate">Datum odeslání daru <span class="req">*</span></label>
+            <input type="date" id="sentDate" required />
+            <div class="helper">Ideálně datum, kdy jste platbu opravdu odeslali.</div>
+          </div>
+        </div>
+
+        <!-- Options -->
         <div class="form-group">
-          <label for="companyName">Název společnosti *</label>
-          <input type="text" id="companyName" />
+          <label class="check-row">
+            <input type="checkbox" id="newsletter" />
+            <span>Chci občas dostat novinky o Příběhářích (max párkrát do roka).</span>
+          </label>
         </div>
+
         <div class="form-group">
-          <label for="ico">IČO *</label>
-          <input type="text" id="ico" />
+          <label class="check-row">
+            <input type="checkbox" id="consent" required />
+            <span>
+              Souhlasím se
+              <a id="gdpr-link" href="#" target="_blank" rel="noopener noreferrer">zpracováním osobních údajů</a>
+              za účelem vystavení potvrzení o daru.
+            </span>
+          </label>
         </div>
-        <div class="form-group">
-          <label for="contactPerson">Kontaktní osoba *</label>
-          <input type="text" id="contactPerson" />
-        </div>
-      </div>
 
-      <div class="form-group">
-        <label for="email">E-mail *</label>
-        <input type="email" id="email" required />
-      </div>
+        <!-- Error -->
+        <div id="form-error" class="error" style="display:none;"></div>
 
-      <div class="form-group">
-        <label for="phone">Telefon (nepovinné)</label>
-        <input type="tel" id="phone" />
-      </div>
+        <!-- Submit -->
+        <button type="submit" id="submit-btn" class="btn">
+          Odeslat
+        </button>
+      </form>
+    </div>
 
-      <div class="form-group">
-        <label for="street">Ulice a číslo *</label>
-        <input type="text" id="street" required />
+    <footer class="footer">
+      <div class="tiny">
+        Pokud je pro vás pohodlnější, napište nám i rovnou na e-mail – ale formulář je nejrychlejší cesta. 💛
       </div>
-
-      <div class="form-group">
-        <label for="city">Město *</label>
-        <input type="text" id="city" required />
-      </div>
-
-      <div class="form-group">
-        <label for="zip">PSČ *</label>
-        <input type="text" id="zip" required />
-      </div>
-
-      <div class="form-group">
-        <label for="amount">Částka daru (Kč) *</label>
-        <input type="number" id="amount" min="1" step="1" required />
-      </div>
-
-      <div class="form-group">
-        <label for="sentDate">Datum odeslání daru *</label>
-        <input type="date" id="sentDate" required />
-      </div>
-
-      <div class="form-group">
-        <label>
-          <input type="checkbox" id="newsletter" />
-          Chci občas dostat novinky o Příběhářích (max párkrát do roka).
-        </label>
-      </div>
-
-      <div class="form-group">
-        <label>
-          <input type="checkbox" id="consent" required />
-          Souhlasím se <a id="gdpr-link" href="#" target="_blank" rel="noopener noreferrer">zpracováním osobních údajů</a>
-          za účelem vystavení potvrzení o daru.
-        </label>
-      </div>
-
-      <button type="submit" id="submit-btn">Odeslat</button>
-      <div id="form-error" class="error" style="display:none;"></div>
-    </form>
+    </footer>
   </main>
 
   <script src="./config.js"></script>
