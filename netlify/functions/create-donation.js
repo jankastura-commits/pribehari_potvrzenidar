@@ -1,8 +1,15 @@
 const { google } = require("googleapis");
+const { Resend } = require("resend");
 
 const GSHEETS_SPREADSHEET_ID = process.env.GSHEETS_SPREADSHEET_ID;
 const GSHEETS_SHEET_NAME = process.env.GSHEETS_SHEET_NAME || "Dary";
 const SERVICE_ACCOUNT_JSON_BASE64 = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64;
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const EMAIL_FROM = process.env.EMAIL_FROM; // např. "Příběháři <info@pribehari.cz>"
+const DONATION_BCC = process.env.DONATION_BCC || "jan.kastura@gmail.com,kasturova@gmail.com";
+
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -51,6 +58,7 @@ exports.handler = async (event) => {
       return jsonError(500, "Chybí nastavení ukládání (Google Sheets).");
     }
 
+    // 1) uložit do Google Sheets
     await appendToSheet({
       timestamp: new Date().toISOString(),
       donorType,
@@ -68,6 +76,22 @@ exports.handler = async (event) => {
       sentDate,
       newsletter
     });
+
+    // 2) poslat e-mail jako potvrzení přijetí žádosti (ne potvrzení platby)
+    //    E-mail je "best effort" – když selže, funkce pořád vrátí success.
+    try {
+      await sendDonationRequestEmail({
+        donorType,
+        firstName,
+        lastName,
+        companyName,
+        email,
+        amount,
+        sentDate,
+      });
+    } catch (mailErr) {
+      console.error("Email send failed:", mailErr);
+    }
 
     return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch (err) {
@@ -118,4 +142,79 @@ async function appendToSheet(row) {
     valueInputOption: "USER_ENTERED",
     requestBody: { values }
   });
+}
+
+function safeBccList() {
+  return DONATION_BCC
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
+
+function formatDonorName(donorType, firstName, lastName, companyName) {
+  if (donorType === "PO") return companyName || "dárce";
+  const full = `${firstName || ""} ${lastName || ""}`.trim();
+  return full || "dárce";
+}
+
+async function sendDonationRequestEmail({ donorType, firstName, lastName, companyName, email, amount, sentDate }) {
+  // Pokud není nakonfigurovaný Resend, jen přeskočíme (nechceme rozbít flow).
+  if (!resend) {
+    console.warn("RESEND_API_KEY není nastaven. E-mail se neodeslal.");
+    return;
+  }
+  if (!EMAIL_FROM) {
+    console.warn("EMAIL_FROM není nastaven. E-mail se neodeslal.");
+    return;
+  }
+
+  const donorName = formatDonorName(donorType, firstName, lastName, companyName);
+
+  const subject = "Příběháři – přijali jsme žádost o potvrzení daru 💛";
+
+  const html = `
+    <p>Dobrý den, ${escapeHtml(donorName)},</p>
+
+    <p>
+      děkujeme, že podporujete projekt <strong>Příběháři</strong>.
+      Vaši žádost o vystavení potvrzení o daru jsme úspěšně přijali.
+    </p>
+
+    <p>
+      <strong>Rekapitulace údajů z formuláře:</strong><br/>
+      Částka daru: <strong>${escapeHtml(String(amount))} Kč</strong><br/>
+      Datum odeslání daru: ${escapeHtml(sentDate)}
+    </p>
+
+    <p>
+      Potvrzení o daru vystavíme po spárování platby na našem transparentním účtu
+      a zašleme vám jej e-mailem.
+    </p>
+
+    <p>
+      Pokud jste udělali překlep v údajích, odpovězte prosím na tento e-mail.
+    </p>
+
+    <p>
+      💛<br/>
+      Tým Příběháři
+    </p>
+  `;
+
+  await resend.emails.send({
+    from: EMAIL_FROM,
+    to: email,
+    bcc: safeBccList(),
+    subject,
+    html,
+  });
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
